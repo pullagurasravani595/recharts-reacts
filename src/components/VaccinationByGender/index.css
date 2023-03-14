@@ -1,1 +1,26 @@
 /* Write your CSS here */
+
+.container {
+  background-color: #1c1c2b;
+  background-size: cover;
+  height: auto;
+  padding-top: 20px;
+  padding-left: 22px;
+  margin-bottom: 20px;
+}
+
+.heading {
+  font-size: 18px;
+  font-family: 'Roboto';
+  color: #6c757d;
+  font-weight: 500;
+}
+
+.chart-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding-right: 470px;
+  margin-bottom: 25px;
+}

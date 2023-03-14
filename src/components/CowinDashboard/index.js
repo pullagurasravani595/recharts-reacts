@@ -16,7 +16,7 @@ const apiStatusConstraints = {
 class CowinDashboard extends Component {
   state = {
     apiStatus: apiStatusConstraints.initial,
-    responseList: [],
+    responseObj: {},
   }
 
   componentDidMount() {
@@ -28,7 +28,7 @@ class CowinDashboard extends Component {
       apiStatus: apiStatusConstraints.inProgress,
     })
 
-    const url = 'https://apis.ccbp.in/covid-vaccination-data'
+    const url = `https://apis.ccbp.in/covid-vaccination-data`
     const options = {
       method: 'GET',
     }
@@ -37,20 +37,27 @@ class CowinDashboard extends Component {
 
     if (response.ok === true) {
       const newData = await response.json()
-      const updateData = await newData.map(eachVaccination => ({
-        last7DaysVaccination: eachVaccination.last_7_days_vaccination.map(
-          eachItem => ({
-            vaccineDate: eachItem.vaccine_date,
-            dose1: eachItem.dose_1,
-            dose2: eachItem.dose_2,
+
+      const updateData = {
+        last7DaysVaccination: newData.last_7_days_vaccination.map(
+          eachVaccination => ({
+            vaccineDate: eachVaccination.vaccine_date,
+            dose1: eachVaccination.dose_1,
+            dose2: eachVaccination.dose_2,
           }),
         ),
-        vaccinationByAge: eachVaccination.vaccination_by_age,
-        vaccinationByGender: eachVaccination.vaccination_by_gender,
-      }))
+        vaccinationByAge: newData.vaccination_by_age.map(eachItem => ({
+          age: eachItem.age,
+          count: eachItem.count,
+        })),
+        vaccinationByGender: newData.vaccination_by_gender.map(eachValue => ({
+          gender: eachValue.gender,
+          count: eachValue.count,
+        })),
+      }
       this.setState({
         apiStatus: apiStatusConstraints.success,
-        responseList: updateData,
+        responseObj: {...updateData},
       })
     } else {
       this.setState({apiStatus: apiStatusConstraints.failure})
@@ -58,32 +65,32 @@ class CowinDashboard extends Component {
   }
 
   renderVaccinationCoverage = () => {
-    const {responseList} = this.state
-    const {last7DaysVaccination} = responseList
+    const {responseObj} = this.state
+    const {last7DaysVaccination} = responseObj
 
     return <VaccinationCoverage last7DaysVaccination={last7DaysVaccination} />
   }
 
   renderVaccinationByGender = () => {
-    const {responseList} = this.state
-    const {vaccinationByGender} = responseList
+    const {responseObj} = this.state
+    const {vaccinationByGender} = responseObj
 
     return <VaccinationByGender vaccinationByGender={vaccinationByGender} />
   }
 
   renderVaccinationByAge = () => {
-    const {responseList} = this.state
-    const {vaccinationByAge} = responseList
+    const {responseObj} = this.state
+    const {vaccinationByAge} = responseObj
 
     return <VaccinationByAge vaccinationByAge={vaccinationByAge} />
   }
 
   renderSuccessView = () => (
-    <div>
+    <>
       <div>{this.renderVaccinationCoverage()}</div>
       <div>{this.renderVaccinationByGender()}</div>
       <div>{this.renderVaccinationByAge()}</div>
-    </div>
+    </>
   )
 
   renderFailureView = () => (
@@ -98,7 +105,7 @@ class CowinDashboard extends Component {
   )
 
   renderLoaderView = () => (
-    <div data-testid="loader" className="Failure-container">
+    <div data-testid="loader" className="load-container">
       <Loader type="ThreeDots" color="#ffffff" height={80} width={80} />
     </div>
   )
@@ -120,6 +127,9 @@ class CowinDashboard extends Component {
   }
 
   render() {
+    const {responseList} = this.state
+    console.log(responseList)
+
     return (
       <div className="cowin-container">
         <div className="logo-heading-container">
@@ -131,7 +141,7 @@ class CowinDashboard extends Component {
           <p className="logo-heading">Co-WIN</p>
         </div>
         <h1 className="heading">CoWIN Vaccination in India</h1>
-        {this.renderAllCharts()}
+        <div>{this.renderAllCharts()}</div>
       </div>
     )
   }

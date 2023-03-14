@@ -6,12 +6,12 @@
 
 .cowin-container {
   background-color: #161625;
-  height: 100vh;
+  min-height: 100vh;
   background-size: cover;
   padding-top: 20px;
   padding-left: 35px;
   padding-right: 35px;
-  padding-bottom: 16px;
+  padding-bottom: 4px;
 }
 
 .logo {
@@ -55,4 +55,9 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
+}
+
+.load-container {
+  text-align: center;
+  margin-top: 170px;
 }
